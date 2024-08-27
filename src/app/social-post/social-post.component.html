@@ -1,0 +1,182 @@
+<div #contenedorPublicacion class="contenedor-publicacion">
+  <!-- Primera vista -->
+  <img class="foto-perfil" [src]="profilePic" alt="Profile Picture">
+  <div class="encabezado-publicacion">
+    <textarea class="textarea-publicacion" placeholder="What are you thinking?" (input)="checkContent($event); autoResize($event)" rows="1" (focus)="onFocus()" id="textarea1"></textarea>
+  <!-- Segunda vista (Barra de botones) -->
+    <div *ngIf="isFocused || hasContent" class="acciones-publicacion">
+      <div class="opciones-media">
+        <span>Agrega</span>
+        <input type="file" multiple #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none;">
+        <button (click)="fileInput.click()" class="btn-media"><i class="fa-solid fa-image"></i></button>
+        
+        <button class="btn-media"><i class="fa-solid fa-circle-play"></i></button>
+        <button class="btn-media"><i class="fa-solid fa-microphone"></i></button>
+        <button class="btn-media"><i class="fa-solid fa-tag"></i></button>
+      </div>
+      <div class="dropdown">
+        <button class="dropdown-btn" (click)="toggleDropdown()">
+          {{ selectedOption }} <span>&#9662;</span>
+        </button>
+        <div #dropdownContent class="dropdown-content" [class.show]="isDropdownOpen">
+          <span [ngStyle]="{'display': privadoIsVisible ? 'block' : 'none'}" id="privado" (click)="selectOption('Privado')">Privado</span>
+          <span [ngStyle]="{'display': soloParaMiIsVisible ? 'block' : 'none'}" id="solo-para-mi" (click)="selectOption('Sólo para mí')">Sólo para mí</span>
+          <span [ngStyle]="{'display': publicoIsVisible ? 'block' : 'none'}" id="publico" (click)="selectOption('Público')">Público</span>
+        </div>
+      </div>         
+      <div class="btn-publicar">
+        <button (click)="publicar()" class="btn-post" [disabled]="hasContent ? false : true">Post</button>
+      </div>
+    </div>
+  </div>
+</div>
+  <!-- Ventana Create Post -->
+<div [ngStyle]="{'display': openCreatePostWindow ? 'block' : 'none'}" class="overlay-create-post">
+  <div *ngIf="openCreatePostWindow" class="contenedor-publicacion create-post-container">
+    <div class="titulo">
+      <h2>Create post</h2>
+      <button (click)="closeCreatePostWindow()" class="btn-cross"><i class="fa-solid fa-x"></i></button>
+    </div>
+    <div class="contenido-carga-imagen">
+      <img class="foto-perfil" [src]="profilePic" alt="Profile Picture">
+      <div class="contenido">
+        <div class="encabezado-publicacion">
+          <button (click)="fileInput.click()" class="btn-add-close add"><i class="fa-solid fa-plus"></i></button>
+          <button (click)="removeImage()" class="btn-add-close close"><i class="fa-solid fa-x"></i></button>
+          
+          <div class="image-thumbnail-container">
+            <div class="image-thumbnail" id="image-thumbnail">
+              <div *ngFor="let image of selectedImages; let i = index" class="image-thumbnail-item create-post">
+                <img [src]="image" [ngClass]="'image-thumbnail-' + (i + 1)" alt="Selected image" />
+              </div>
+            </div>
+          </div>
+          
+          <textarea class="textarea-publicacion textarea-create-post" placeholder="What are you thinking?" (input)="checkContent($event); autoResize($event)" rows="1"></textarea>
+          
+          <div class="acciones-publicacion">
+            <div class="opciones-media">
+              <span>Agrega</span>
+              <input multiple type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none;">
+              <button (click)="fileInput.click()" class="btn-media"><i class="fa-solid fa-image"></i></button>
+              
+              <button class="btn-media"><i class="fa-solid fa-circle-play"></i></button>
+              <button class="btn-media"><i class="fa-solid fa-microphone"></i></button>
+              <button class="btn-media"><i class="fa-solid fa-tag"></i></button>
+            </div>
+
+            <div class="dropdown2">
+              <button class="dropdown-btn" (click)="toggleDropdown2()">
+                {{ selectedOption }} <span>&#9662;</span>
+              </button>
+              <div #dropdown2Content class="dropdown-content" [class.show]="isDropdown2Open">
+                <span [ngStyle]="{'display': privadoIsVisible ? 'block' : 'none'}" id="privado" (click)="selectOption('Privado')">Privado</span>
+                <span [ngStyle]="{'display': soloParaMiIsVisible ? 'block' : 'none'}" id="solo-para-mi" (click)="selectOption('Sólo para mí')">Sólo para mí</span>
+                <span [ngStyle]="{'display': publicoIsVisible ? 'block' : 'none'}" id="publico" (click)="selectOption('Público')">Público</span>
+              </div>  
+            </div>     
+
+            <div class="btn-publicar">
+              <button (click)="publicar()" class="btn-post" [disabled]="hasContent ? false : true || selectedImages ? false : true">Post</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  <!-- Publicaciones -->
+<div *ngFor="let publicacion of publicaciones; let idx = index" [class]="'feed-publicacion'+' publicacion-' + idx">
+  <div class="post-header">
+    <img class="foto-perfil" [src]="profilePic" alt="Profile Picture">
+    <div class="post-info">
+      <div class="info">
+        <span class="user-name">Eleanor Peña <i class="fa-solid fa-circle-check"></i></span> 
+        <span class="post-time">&nbsp; &middot; &nbsp; 0 min</span>
+        <div class="post-privacy">
+          <span class="privacy"><i class="fa-solid fa-earth-americas"></i></span>
+        </div>
+      </div>
+      <span class="post-tagged"><b></b></span>
+    </div>
+    <div class="post-actions">&middot;&middot;&middot;</div>
+  </div>
+
+  <!-- <div class="image-thumbnail-container">
+    <div class="image-thumbnail" id="image-thumbnail">
+      <div *ngFor="let image of selectedImages; let i = index" class="image-thumbnail-item">
+        <img [src]="image" [ngClass]="'image-thumbnail-' + (i + 1)" alt="Selected image" />
+      </div>
+    </div>
+  </div> -->
+
+  
+  <div class="post-media" *ngIf="publicacion.imageSrc.length || publicacion.content.length">
+    <div class="image-thumbnail-container" *ngIf="publicacion.imageSrc.length">
+      <div class="image-thumbnail post-media" id="post-media-grid">
+
+          <img *ngFor="let imgSrc of publicacion.imageSrc; let i = index" [src]="imgSrc" [ngClass]="'image-thumbnail-item'" alt="Imagen seleccionada" style="max-width: 100%; max-height: 400px;">
+
+      </div>
+    </div>
+    <p class="post-caption">{{ publicacion.content }}</p>
+  </div>
+
+  <!-- <div *ngFor="let imageGroup of publicacion.imageSrc; let idx = index">
+    <div class="image-thumbnail-container">
+      <div class="image-thumbnail post-media" [id]="'post-media-grid-' + idx">
+        <img *ngFor="let imgSrc of imageGroup; let i = index" [src]="imgSrc" [ngClass]="'image-thumbnail-item'" alt="Imagen seleccionada" style="max-width: 100%; max-height: 400px;">
+      </div>
+    </div>
+  </div> -->
+  
+  
+
+  <div class="post-reactions">
+    <div class="reaction"><span class="likes"><i class="fa-solid fa-thumbs-up"></i>&nbsp;0 Likes</span></div>
+    <div class="reaction"><span class="comments"><i class="fa-regular fa-comment"></i>&nbsp;0 comments</span></div>
+    <div class="reaction"><span class="shares"><i class="fa-solid fa-share"></i>&nbsp;0 shares</span></div>
+  </div>
+</div>
+
+  <!-- Publicaciones Antiguas-->
+
+<div class="feed-publicacion">
+  <div class="post-header">
+    <img class="foto-perfil" [src]="profilePic" alt="Profile Picture">
+    <div class="post-info">
+      <div class="info">
+        <span class="user-name">Eleanor Peña <i class="fa-solid fa-circle-check"></i></span> 
+        <span class="post-time">&nbsp; &middot; &nbsp; 5 min</span>
+        <div class="post-privacy">
+          <span class="privacy"><i class="fa-solid fa-earth-americas"></i></span>
+        </div>
+      </div>
+      <span class="post-tagged">Con <b>Karol G, Camilo y otros.</b></span>
+    </div>
+    <div class="post-actions">&middot;&middot;&middot;</div>
+  </div>
+
+  <div class="post-media">
+    <div class="media-grid">
+      <img src="../../assets/imgs/example1.jpg" class="media-image image-two-row">
+      <img src="../../assets/imgs/example2.jpg" class="media-image image-two-row">
+      <img src="../../assets/imgs/example3.png" class="media-image image-three-row">
+      <img src="../../assets/imgs/example4.jpg" class="media-image image-three-row">
+      <div class="media-more image-three-row">
+        <img src="../../assets/imgs/example5.jpg" class="media-image">
+        <div class="media-overlay">+3</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="post-caption">
+    This was the best performance of the night! The dancers, Choreography, costumes, stage everything! As busy as she is with her tour and then to put this sh...
+  </div>
+
+  <div class="post-reactions">
+    <div class="reaction"><span class="likes"><i class="fa-solid fa-thumbs-up"></i>&nbsp;20 Likes</span></div>
+    <div class="reaction"><span class="comments"><i class="fa-regular fa-comment"></i>&nbsp;10k comments</span></div>
+    <div class="reaction"><span class="shares"><i class="fa-solid fa-share"></i>&nbsp;42 shares</span></div>
+  </div>
+</div>
